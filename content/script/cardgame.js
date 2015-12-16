@@ -85,9 +85,18 @@ function new_game(r, c)
 				tu.appendChild(t1);
 
 				td.setAttribute('class', 'card_facedown');
+				td.setAttribute('id', 'card_facedown_'+m);
 				t2.setAttribute('class', 'card_visual');
 				t2.setAttribute('id', 'card_'+m+'_down');
 				td.appendChild(t2);
+
+				td.onmouseover = function() {
+					trigger_thumbnail(td, 50);
+				};
+
+				td.onmouseout = function() {
+					trigger_thumbnail(td, 100);
+				};
 
 				td.onclick = function () {
 					if (move_engaged == 2) return;

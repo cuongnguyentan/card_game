@@ -77,7 +77,7 @@ function trigger_thumbnail(elem, opacity)
 		animators[elem.id] = new Animator();
 
 	animators[elem.id].elem = elem;
-	animators[elem.id].transOpacity(opacity, 5);
+	animators[elem.id].transOpacity(opacity, 2);
 }
 
 function trigger_nav_bg(elem, h)
