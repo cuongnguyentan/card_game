@@ -20,10 +20,29 @@
 	padding-left:30px;
 }
 
+#game_msg
+{
+	position:absolute;
+	top:0;
+	left:0;
+	width:100%;
+	height:100%;
+	font-family:OpenExtra;
+	text-align:center;
+	font-size:64px;
+	opacity:0.9;
+	background-color:#ffffff;
+	z-index:9;
+	color:#81667A;
+	padding-top:calc(50% - 50px);
+	display:none;
+}
+
 #game_board
 {
 	width:100%;
 	max-width:600px;
+	position:relative;
 }
 
 .card_holder

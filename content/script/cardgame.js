@@ -18,12 +18,13 @@ var move_timeout = 500;
 var pair = [{}, {}];
 var total, mid;
 var used_colors = [];
+var disposed = 0;
 
 function new_game(r, c)
 {
 	var i, j, n, m;
 
-	board.innerHTML = '';
+	board.innerHTML = '<div id="game_msg"><span>You Won</span></div>';
 	id('move_count').innerHTML = 0;
 
 	r = r || 5;
@@ -184,6 +185,9 @@ function check_pair()
 				move_engaged = 0;
 				return;
 			});
+
+			disposed += 2;
+			if (disposed >= total - 1) end_game();
 		}
 		else
 		{
@@ -197,4 +201,12 @@ function check_pair()
 			});
 		}
 	}, move_timeout);
+}
+
+function end_game()
+{
+	var won = id('game_msg');
+	setOpacity(won, 0);
+	show(won);
+	trigger_thumbnail(won, 100);
 }
