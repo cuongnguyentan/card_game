@@ -23,6 +23,7 @@ var disposed = 0;
 function new_game(r, c)
 {
 	var i, j, n, m;
+	var used_cards = [];
 
 	board.innerHTML = '<div id="game_msg"><span>You Won</span></div>';
 	id('move_count').innerHTML = 0;
@@ -62,7 +63,14 @@ function new_game(r, c)
 			(function () {
 				var temp, t, t1, t2, tu, td;
 				var m = n;
-				var k = Math.floor(Math.random()*total);
+				var k;
+
+				do
+				{
+					k = Math.floor(Math.random()*total);
+				} while (used_cards.indexOf(k) >= 0)
+
+				used_cards.push(k);
 
 				temp = document.createElement('div');
 				temp.setAttribute('class', 'slot card_holder');
@@ -208,5 +216,5 @@ function end_game()
 	var won = id('game_msg');
 	setOpacity(won, 0);
 	show(won);
-	trigger_thumbnail(won, 100);
+	trigger_thumbnail(won, 90);
 }
