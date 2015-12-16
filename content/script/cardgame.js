@@ -24,6 +24,7 @@ function new_game(r, c)
 	var i, j, n, m;
 
 	board.innerHTML = '';
+	id('move_count').innerHTML = 0;
 
 	r = r || 5;
 	c = c || 5;
