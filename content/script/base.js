@@ -523,6 +523,7 @@ function resize_(holder)
 		var spanmin = parseInt(elems[i].getAttribute('spanmin'));
 		var pleft = parseInt(elems[i].getAttribute('padleft'));
 		var pright = parseInt(elems[i].getAttribute('padright'));
+		var square = parseInt(elems[i].getAttribute('square'));
 
 		var w = Math.floor(container / div * span);
 
@@ -533,6 +534,7 @@ function resize_(holder)
 		if (pright >= 0) elems[i].style.paddingRight = pright + 'px';
 
 		elems[i].style.width = w + 'px';
+		if (square) elems[i].style.height = w + 'px';
 
 		upto += w;
 
@@ -857,6 +859,17 @@ function shut_auto_complete(elem)
 	var target = elem.getElementsByTagName('div')[0];
 	target.innerHTML = '';
 	hide(target);
+}
+
+function random_color()
+{
+	var source = [0,1,2,3,4,5,6,7,8,9,'a','b','c','d','e','f'];
+	var color = '#';
+
+	for (var i = 0; i < 6; i++)
+		color += source[Math.floor(Math.random()*16)];
+
+	return color;
 }
 
 //AJAX
@@ -1230,7 +1243,7 @@ Animator.prototype.transWidth = function (diff, speed, outcome, args)
 	}
 }
 
-Animator.prototype.transWidthTo = function (target, speed, outcome, args)
+Animator.prototype.transWidthTo = function (target, speed, outcome, args, plot)
 {
 	clear_timeout(this.timeout);
 
@@ -1245,13 +1258,19 @@ Animator.prototype.transWidthTo = function (target, speed, outcome, args)
 			var pos = i;
 			var t = origin + Math.floor((target - origin) * pos / 100);
 
+			var temp = Math.pow(Math.E, (pos + 1)/20)*speed;
+			if (plot) temp = (pos + 1)*speed;
+
 			that.timeout[i] = setTimeout(function()
 					  {
-						  that.elem.style.width = t + 'px';
+							that.elem.style.width = t + 'px';
 
-						  if (pos >= 100) outcome(args);
+							if (pos >= 100) 
+							{
+								if (outcome) outcome(args);
+							}
 
-					  }, Math.pow(Math.E, (pos + 1)/20)*speed);
+					  }, temp);
 		})();
 	}
 }

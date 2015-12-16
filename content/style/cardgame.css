@@ -1,0 +1,77 @@
+@charset "utf-8";
+/* CSS Document */
+
+#move
+{
+	font-family:Open;
+	color:#8C8A93;
+	font-size:16px;
+}
+
+#move > span
+{
+	vertical-align:middle;
+}
+
+#move_count
+{
+	font-family:OpenLight;
+	font-size:32px;
+	padding-left:30px;
+}
+
+#game_board
+{
+	width:100%;
+	max-width:600px;
+}
+
+.card_holder
+{
+	padding:7px;
+}
+
+.card
+{
+	position:relative;
+	border-radius:3px;
+	overflow:hidden;
+	height:100%;
+	cursor:pointer;
+}
+
+.card_facedown, .card_faceup
+{
+	position:absolute;
+	top:0;
+	left:0;
+	width:100%;
+	height:100%;
+}
+
+.card_faceup
+{
+	z-index:1;
+}
+
+.card_facedown
+{
+	z-index:2;
+}
+
+.card_visual
+{
+	width:100%;
+	height:100%;
+	margin:0 auto;
+}
+
+.card_faceup .card_visual
+{
+	width:0;
+}
+
+.card_facedown .card_visual
+{
+	background-color:#92B4A7;
+}
