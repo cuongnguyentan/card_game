@@ -20,13 +20,26 @@ var total, mid;
 var used_colors = [];
 var disposed = 0;
 
+function reset_game()
+{
+	cards = [];
+	reserved_colors = ['#92B4A7', '#81667A'];
+	move_count = 0;
+	move_engaged = 0;
+	pair = [{}, {}];
+	used_colors = [];
+	disposed = 0;
+
+	board.innerHTML = '<div id="game_msg"></div>';
+	id('move_count').innerHTML = 0;
+}
+
 function new_game(r, c)
 {
+	reset_game();
+
 	var i, j, n, m;
 	var used_cards = [];
-
-	board.innerHTML = '<div id="game_msg"><span>You Won</span></div>';
-	id('move_count').innerHTML = 0;
 
 	r = r || 5;
 	c = c || 5;
@@ -214,6 +227,8 @@ function check_pair()
 function end_game()
 {
 	var won = id('game_msg');
+	won.innerHTML = '<span>You Won</span>';
+
 	setOpacity(won, 0);
 	show(won);
 	trigger_thumbnail(won, 90);
