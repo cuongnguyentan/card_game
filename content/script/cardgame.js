@@ -37,14 +37,18 @@ app.controller('GameController', function($scope, $rootScope, $location, $window
 
 	$rootScope.cards = [];
 	$rootScope.moveCount = 0;
+	$rootScope.gameMsg = '';
 
 	function reset_game()
 	{
 		var msg = $window.document.getElementById('game_msg');
-		$(msg).stop().animate({opacity: 0}, 200, 'swing');
+		$(msg).stop().animate({opacity: 0}, 200, 'swing', function() {
+			$(msg).hide();
+		});
 
 		$rootScope.cards = [];
 		$rootScope.moveCount = 0;
+		$rootScope.gameMsg = '';
 
 		move_engaged = 0;
 		pair = [{}, {}];
@@ -85,7 +89,7 @@ app.controller('GameController', function($scope, $rootScope, $location, $window
 		return color;
 	}
 
-	$scope.new_game = function(r, c)
+	function new_game(r, c)
 	{
 		reset_game();
 
@@ -124,6 +128,15 @@ app.controller('GameController', function($scope, $rootScope, $location, $window
 		}
 
 		mix_cards();
+	}
+
+	$scope.restart_game = function()
+	{
+		end_game('Starting New Game...');
+
+		$timeout(function() {
+			new_game();
+		}, 1000);
 	}
 
 	$scope.facedownAction = function ($event) {
@@ -188,7 +201,7 @@ app.controller('GameController', function($scope, $rootScope, $location, $window
 				});
 
 				disposed += 2;
-				if (disposed >= total - 1) end_game();
+				if (disposed >= total - 1) end_game('You Won');
 			}
 			else
 			{
@@ -204,15 +217,17 @@ app.controller('GameController', function($scope, $rootScope, $location, $window
 		}, move_timeout);
 	}
 
-	function end_game()
+	function end_game(str)
 	{
-		var won = $window.document.getElementById('game_msg');
-		$scope.gameMsg = 'You Won';
+		var msg = $window.document.getElementById('game_msg');
+		$rootScope.gameMsg = str;
 
-		$(won).stop().animate({opacity: 0}, 0, 'linear');
-		$(won).show();;
-		$(won).stop().animate({opacity: 0.9}, 200, 'swing');
+		$(msg).stop().animate({opacity: 0}, 0, 'linear');
+		$(msg).show();
+		$(msg).stop().animate({opacity: 0.9}, 200, 'swing');
 	}
 
-	$scope.new_game();
+	$timeout(function() {
+		new_game();
+	}, 0);
 });
