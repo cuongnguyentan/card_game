@@ -9,227 +9,206 @@
 // MEMORY CARD GAME
 //=======================================================================================================
 
-var board = id('game_board');
-var cards = [];
-var reserved_colors = ['#92B4A7', '#81667A'];
-var move_count = 0;
-var move_engaged = 0;
-var move_timeout = 500;
-var pair = [{}, {}];
-var total, mid;
-var used_colors = [];
-var disposed = 0;
+var app = angular.module('cardgame', ['ngRoute', 'ngTouch', 'ngAnimate']);
 
-function reset_game()
-{
-	cards = [];
+app.config(['$routeProvider', function($routeProvider) {
+	$routeProvider
+		.when("/", {
+			templateUrl: "pages/game.html",
+			controller: "GameController"
+		})
+
+		.when("/game", {
+			templateUrl: "pages/game.html",
+			controller: "GameController"
+		})
+}]);
+
+app.controller('GameController', function($scope, $rootScope, $location, $window, $timeout) {
+	board = $window.document.getElementById('game_board');
 	reserved_colors = ['#92B4A7', '#81667A'];
-	move_count = 0;
 	move_engaged = 0;
+	move_timeout = 500;
 	pair = [{}, {}];
+	total = 0,
+	mid = 0;
 	used_colors = [];
 	disposed = 0;
 
-	board.innerHTML = '<div id="game_msg"></div>';
-	id('move_count').innerHTML = 0;
-}
+	$rootScope.cards = [];
+	$rootScope.moveCount = 0;
 
-function new_game(r, c)
-{
-	reset_game();
-
-	var i, j, n, m;
-	var used_cards = [];
-
-	r = r || 5;
-	c = c || 5;
-	n = 0;
-
-	total = r * c;
-	mid = Math.ceil(total / 2);
-
-	for (i = 0; i < mid; i++)
+	function reset_game()
 	{
-		do
+		$rootScope.cards = [];
+		$rootScope.moveCount = 0;
+
+		move_engaged = 0;
+		pair = [{}, {}];
+		used_colors = [];
+		disposed = 0;
+	}
+
+	function mix_cards(fold)
+	{
+		var c = $scope.colNum;
+		var r = $scope.rowNum;
+
+		if (!c || !r) return;
+
+		var i, j, k, temp;
+		var n = $rootScope.cards.length;
+		fold = fold || 25;
+
+		for (i = 0; i < fold; i++)
 		{
-			temp = random_color();
-		} while ((reserved_colors.indexOf(temp) >= 0) || ((used_colors.indexOf(temp) >= 0)))
+			j = Math.floor(Math.random()*n);
+			k = Math.floor(Math.random()*n);
 
-		used_colors.push(temp);
-
-		for (j = 0; j < 2; j++)
-		{
-			if (n == total) break;
-
-			cards[n] = {};
-			cards[n].index = n;
-			cards[n].color = temp;
-			n++;
+			temp = $rootScope.cards[j].index;
+			$rootScope.cards[j].index = $rootScope.cards[k].index;
+			$rootScope.cards[k].index = temp;
 		}
 	}
 
-	n = 0;
-	for (i = 0; i < r; i++)
+	function random_color()
 	{
-		for (j = 0; j < c; j++)
+		var source = [0,1,2,3,4,5,6,7,8,9,'a','b','c','d','e','f'];
+		var color = '#';
+
+		for (var i = 0; i < 6; i++)
+			color += source[Math.floor(Math.random()*16)];
+
+		return color;
+	}
+
+	$scope.new_game = function(r, c)
+	{
+		reset_game();
+
+		var i, j, n, m;
+		var used_cards = [];
+
+		r = r || 5;
+		c = c || 5;
+		n = 0;
+
+		$scope.colNum = c;
+		$scope.rowNum = r;
+
+		total = r * c;
+		mid = Math.ceil(total / 2);
+
+		for (i = 0; i < mid; i++)
 		{
-			(function () {
-				var temp, t, t1, t2, tu, td;
-				var m = n;
-				var k;
+			do
+			{
+				temp = random_color();
+			} while ((reserved_colors.indexOf(temp) >= 0) || ((used_colors.indexOf(temp) >= 0)))
 
-				do
-				{
-					k = Math.floor(Math.random()*total);
-				} while (used_cards.indexOf(k) >= 0)
+			used_colors.push(temp);
 
-				used_cards.push(k);
+			for (j = 0; j < 2; j++)
+			{
+				if (n == total) break;
 
-				temp = document.createElement('div');
-				temp.setAttribute('class', 'slot card_holder');
-				temp.setAttribute('id', 'card_holder_'+m);
-				temp.setAttribute('slotdiv', c);
-				temp.setAttribute('slotspan', 1);
-				temp.setAttribute('square', 1);
-
-				t = document.createElement('div');
-				t.setAttribute('class', 'card');
-				t.setAttribute('id', 'card_'+m);
-
-				tu = document.createElement('div');
-				td = document.createElement('div');
-				t1 = document.createElement('div');
-				t2 = document.createElement('div');
-
-				tu.setAttribute('class', 'card_faceup');
-				t1.style.backgroundColor = cards[k].color;
-				t1.setAttribute('class', 'card_visual');
-				t1.setAttribute('id', 'card_'+m+'_up');
-				tu.appendChild(t1);
-
-				td.setAttribute('class', 'card_facedown');
-				td.setAttribute('id', 'card_facedown_'+m);
-				t2.setAttribute('class', 'card_visual');
-				t2.setAttribute('id', 'card_'+m+'_down');
-				td.appendChild(t2);
-
-				td.onmouseover = function() {
-					trigger_thumbnail(td, 50);
-				};
-
-				td.onmouseout = function() {
-					trigger_thumbnail(td, 100);
-				};
-
-				td.onclick = function () {
-					if (move_engaged == 2) return;
-
-					trigger_card(t2, t1, function(){
-						hide(td);
-
-						if (!move_engaged)
-						{
-							move_engaged = 1;
-							pair[0].card = cards[k];
-							pair[0].elem = [t1, t2];
-						}
-						else
-						{
-							move_engaged = 2;
-							pair[1].card = cards[k];
-							pair[1].elem = [t1, t2];
-							check_pair();
-						}
-					});
-				};
-
-				t.appendChild(tu);
-				t.appendChild(td);
-
-				temp.appendChild(t);
-				board.appendChild(temp);
-
-				setOpacity(temp, 0);
-				setTimeout(function() {
-					trigger_thumbnail(temp, 100);
-				}, m/total * 1000);
-
+				$rootScope.cards[n] = {};
+				$rootScope.cards[n].index = n;
+				$rootScope.cards[n].num = n;
+				$rootScope.cards[n].color = temp;
 				n++;
-			})();
+			}
 		}
+
+		mix_cards();
 	}
 
-	temp = document.createElement('div');
-	temp.setAttribute('class', 'clear');
-	board.appendChild(temp);
+	$scope.facedownAction = function ($event) {
+		if (move_engaged == 2) return;
 
-	resize_slot();
-}
+		var td = $event.currentTarget;
+		var t2 = td.getElementsByClassName('card_visual')[0];
+		var t1 = td.parentNode.getElementsByClassName('card_faceup')[0].getElementsByClassName('card_visual')[0];
 
-function trigger_card(pre, post, transit)
-{
-	var w = pre.parentNode.offsetWidth;
+		var temp = t1.getAttribute('id');
+		var k = parseInt(temp.substring(temp.lastIndexOf('_') + 1, temp.length));
 
-	if (!animators[pre.id])
-		animators[pre.id] = new Animator();
+		trigger_card(t2, t1, function(){
+			$(td).hide();
 
-	if (!animators[post.id])
-		animators[post.id] = new Animator();
+			if (!move_engaged)
+			{
+				move_engaged = 1;
+				pair[0].card = $rootScope.cards[k];
+				pair[0].elem = [t1, t2];
+			}
+			else
+			{
+				move_engaged = 2;
+				pair[1].card = $rootScope.cards[k];
+				pair[1].elem = [t1, t2];
+				check_pair();
+			}
+		});
+	};
 
-	animators[pre.id].elem = pre;
-	animators[pre.id].transWidthTo(0, 1, function(){
-		if (transit) transit();
+	function trigger_card(pre, post, transit)
+	{
+		var w = pre.parentNode.offsetWidth;
 
-		animators[post.id].elem = post;
-		animators[post.id].transWidthTo(w, 2);
-	}, null, true);
-}
+		$(pre).stop().animate({width: 0}, 100, 'linear', function() {
+			if (transit) transit();
 
-function check_pair()
-{
-	var flag = false;
-	if (pair[0].card.color == pair[1].card.color) flag = true;
-	
-	move_count++;
-	id('move_count').innerHTML = move_count;
-	
-	setTimeout(function() {
-		if (flag)
-		{
-			trigger_card(pair[0].elem[0], pair[0].elem[1], function() {
-				hide(pair[0].elem[0].parentNode.parentNode);
-				return;
-			});
+			$(post).stop().animate({width: w}, 200, 'swing');
+		});
+	}
 
-			trigger_card(pair[1].elem[0], pair[1].elem[1], function() {
-				hide(pair[1].elem[0].parentNode.parentNode);
-				move_engaged = 0;
-				return;
-			});
+	function check_pair()
+	{
+		var flag = false;
+		if (pair[0].card.color == pair[1].card.color) flag = true;
 
-			disposed += 2;
-			if (disposed >= total - 1) end_game();
-		}
-		else
-		{
-			trigger_card(pair[0].elem[0], pair[0].elem[1], function() {
-				show(pair[0].elem[1].parentNode);
-			});
+		$rootScope.moveCount++;
 
-			trigger_card(pair[1].elem[0], pair[1].elem[1], function() {
-				show(pair[1].elem[1].parentNode);
-				move_engaged = 0;
-			});
-		}
-	}, move_timeout);
-}
+		$timeout(function() {
+			if (flag)
+			{
+				trigger_card(pair[0].elem[0], pair[0].elem[1], function() {
+					$(pair[0].elem[0].parentNode.parentNode).hide();
+					return;
+				});
 
-function end_game()
-{
-	var won = id('game_msg');
-	won.innerHTML = '<span>You Won</span>';
+				trigger_card(pair[1].elem[0], pair[1].elem[1], function() {
+					$(pair[1].elem[0].parentNode.parentNode).hide();
+					move_engaged = 0;
+					return;
+				});
 
-	setOpacity(won, 0);
-	show(won);
-	trigger_thumbnail(won, 90);
-}
+				disposed += 2;
+				if (disposed >= total - 1) end_game();
+			}
+			else
+			{
+				trigger_card(pair[0].elem[0], pair[0].elem[1], function() {
+					$(pair[0].elem[1].parentNode).show();
+				});
+
+				trigger_card(pair[1].elem[0], pair[1].elem[1], function() {
+					$(pair[1].elem[1].parentNode).show();
+					move_engaged = 0;
+				});
+			}
+		}, move_timeout);
+	}
+
+	function end_game()
+	{
+		var won = $window.document.getElementById('game_msg');
+		$scope.gameMsg = 'You Won';
+
+		$(won).show();;
+		$(won).stop().animate({opacity: 0.9}, 200, 'swing');
+	}
+
+	$scope.new_game();
+});

@@ -1,0 +1,30 @@
+<link rel="stylesheet" type="text/css" href="style/cardgame.css"/>
+
+<div class="container" style="margin:30px auto" ng-controller="GameController">
+	<div class="button_holder" ng-click="new_game();">
+		<div class="button_bg" style="background-color:#81667A"></div>
+		<div class="button_hover"><div id="new_game" style="background-color:#8C8A93"></div></div>
+		<div class="button_text flex" minfsize="11" maxfsize="16">New Game</div>
+	</div>
+
+	<div id="move">
+		<span>Move: </span>
+		<span id="move_count">{{moveCount}}</span>
+	</div>
+</div>
+
+<div class="container">
+	<div id="game_board" class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
+		<div ng-repeat="card in cards | orderBy:'index'" class="card_holder" id="card_holder_{{card.num}}">
+			<div class="card" id="card_{{card.num}}">
+				<div class="card_faceup">
+					<div class="card_visual" id="card_up_{{card.num}}" style="background-color:{{card.color}}"></div>
+				</div>
+				<div class="card_facedown" ng-click="facedownAction($event)">
+					<div class="card_visual" id="card_down_{{card.num}}"></div>
+				</div>
+			</div>
+		</div>
+		<div id="game_msg"><span>{{gameMsg}}</span></div>
+	</div>
+</div>

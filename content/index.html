@@ -1,47 +1,30 @@
 <!doctype html>
-<html>
+<html ng-app="cardgame">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, height=device-height, target-densitydpi=device-dpi, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=0">
 
 <link rel="shortcut icon" href="style/favicon.ico"/>
-<link rel="stylesheet" type="text/css" href="style/skin.css"/>
+<link rel="stylesheet" type="text/css" href="style/bootstrap.css"/>
 <link rel="stylesheet" type="text/css" href="style/style.css"/>
-<link rel="stylesheet" type="text/css" href="style/popup.css"/>
-<link rel="stylesheet" type="text/css" href="style/cardgame.css"/>
 
 <title>A Simple Card Game | Entrance Test, Cuong Nguyen Tan</title>
 </head>
 
-<body onLoad="init(); new_game()">
+<body>
 
-	<div class="container" style="margin:30px auto">
-		<div class="button_holder" onMouseOver="trigger_button(this)" onMouseOut="untrigger_button(this)" onclick="new_game();">
-			<div class="button_bg" style="background-color:#81667A"></div>
-			<div class="button_hover"><div id="new_game" style="background-color:#8C8A93"></div></div>
-			<div class="button_text flex" minfsize="11" maxfsize="16">New Game</div>
-		</div>
-
-		<div id="move">
-			<span>Move: </span>
-			<span id="move_count">0</span>
-		</div>
-	</div>
-
-	<div class="container">
-		<div id="game_board" class="holder">
-			<div id="game_msg"><span>You Won</span></div>
-		</div>
-	</div>
+	<div ng-view=""></div>
 
 	<div class="container" style="margin-top:30px;">
 		A Simple Card Game | Entrance Test<br/>
 		Developed by <a class="hover_underline" href="http://www.cuongxoi.com">NGUYEN TAN CUONG</a>.
 	</div>
 
-	<script type="text/javascript" language="javascript" src="script/base.js"></script>
-	<script type="text/javascript" language="javascript" src="script/script.js"></script>
-	<script type="text/javascript" language="javascript" src="script/popup.js"></script>
+	<script type="text/javascript" language="javascript" src="script/angular/angular.min.js"></script>
+	<script type="text/javascript" language="javascript" src="script/angular/angular-route.min.js"></script>
+	<script type="text/javascript" language="javascript" src="script/angular/angular-touch.min.js"></script>
+	<script type="text/javascript" language="javascript" src="script/angular/angular-animate.min.js"></script>
+	<script type="text/javascript" language="javascript" src="script/jquery/jquery-2.1.4.min.js"></script>
 	<script type="text/javascript" language="javascript" src="script/cardgame.js"></script>
 
 </body>
