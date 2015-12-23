@@ -40,6 +40,9 @@ app.controller('GameController', function($scope, $rootScope, $location, $window
 
 	function reset_game()
 	{
+		var msg = $window.document.getElementById('game_msg');
+		$(msg).stop().animate({opacity: 0}, 200, 'swing');
+
 		$rootScope.cards = [];
 		$rootScope.moveCount = 0;
 
@@ -206,6 +209,7 @@ app.controller('GameController', function($scope, $rootScope, $location, $window
 		var won = $window.document.getElementById('game_msg');
 		$scope.gameMsg = 'You Won';
 
+		$(won).stop().animate({opacity: 0}, 0, 'linear');
 		$(won).show();;
 		$(won).stop().animate({opacity: 0.9}, 200, 'swing');
 	}
